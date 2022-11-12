@@ -2,16 +2,27 @@
 
 namespace App\Http\Controllers\Blog\Admin;
 
+use App\Http\Requests\BlogCategoryCreateRequest;
 use App\Http\Requests\BlogCategoryUpdateRequest;
 use App\Models\BlogCategory;
+use App\Repositories\BlogCategoryRepository;
 use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Contracts\View\Factory;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
-use Illuminate\Http\Request;
+use Str;
 
 class CategoryController extends BaseController
 {
+    private BlogCategoryRepository $blogCategoryRepository;
+
+    public function __construct()
+    {
+        parent::__construct();
+
+        $this->blogCategoryRepository = app(BlogCategoryRepository::class);
+    }
+
     /**
      * Display a listing of the resource.
      *
@@ -19,7 +30,7 @@ class CategoryController extends BaseController
      */
     public function index(): Factory|View|Application
     {
-        $paginator = BlogCategory::paginate(5);
+        $paginator = $this->blogCategoryRepository->getAllWithPaginate(5);
 
         return view('blog.admin.categories.index', compact('paginator'));
     }
@@ -27,22 +38,39 @@ class CategoryController extends BaseController
     /**
      * Show the form for creating a new resource.
      *
-     * @return \Illuminate\Http\Response
+     * @return Application|Factory|View
      */
-    public function create()
+    public function create(): View|Factory|Application
     {
-        dd(__METHOD__);
+        $item = new BlogCategory();
+        $categoryList = $this->blogCategoryRepository->getForComboBox();
+
+        return view('blog.admin.categories.edit', compact('item', 'categoryList'));
     }
 
     /**
      * Store a newly created resource in storage.
      *
-     * @param  Request  $request
-     * @return \Illuminate\Http\Response
+     * @param BlogCategoryCreateRequest $request
+     * @return RedirectResponse
      */
-    public function store(Request $request)
+    public function store(BlogCategoryCreateRequest $request): RedirectResponse
     {
-        dd(__METHOD__);
+        $data = $request->post('category');
+        if (empty($data['slug'])) {
+            $data['slug'] = Str::slug($data['title']);
+        }
+        $item = new BlogCategory($data);
+
+        if ($item->save()) {
+            return redirect()
+                ->route('blog.admin.categories.edit', [$item->id])
+                ->with(['success' => 'Saved with success']);
+        }
+
+        return back()
+            ->withErrors(['msg' => 'Error while saving'])
+            ->withInput();
     }
 
     /**
@@ -53,8 +81,11 @@ class CategoryController extends BaseController
      */
     public function edit($id): Factory|View|Application
     {
-        $item = BlogCategory::findOrFail($id);
-        $categoryList = BlogCategory::all();
+        $item = $this->blogCategoryRepository->getEdit($id);
+        if (is_null($item)) {
+            abort(404);
+        }
+        $categoryList = $this->blogCategoryRepository->getForComboBox();
 
         return view('blog.admin.categories.edit', compact('item', 'categoryList'));
     }
@@ -68,16 +99,17 @@ class CategoryController extends BaseController
      */
     public function update(BlogCategoryUpdateRequest $request, int $id): RedirectResponse
     {
-        $item = BlogCategory::find($id);
-        if (empty($item)) {
+        $item = $this->blogCategoryRepository->getEdit($id);
+        if (is_null($item)) {
             return back()
                 ->withErrors(['msg' => 'No category with id'.$id])
                 ->withInput();
         }
         $data = $request->post('category');
-        $result = $item
-            ->fill($data)
-            ->save();
+        if (empty($data['slug'])) {
+            $data['slug'] = Str::slug($data['title']);
+        }
+        $result = $item->update($data);
 
         if ($result) {
             return redirect()
