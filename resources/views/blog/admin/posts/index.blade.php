@@ -8,11 +8,11 @@
         <div class="mx-auto py-16">
             <div class="text-center mx-auto">
                 <a
-                    href="{{ route('blog.admin.categories.create') }}"
+                    href="{{ route('blog.admin.posts.create') }}"
                     class="border border-indigo-500 bg-indigo-500 text-white rounded-md px-4 py-2 m-2 transition
                     duration-500 ease select-none hover:bg-indigo-600 focus:outline-none focus:shadow-outline"
                 >
-                    Add Category
+                    Add Post
                 </a>
             </div>
         </div>
@@ -25,16 +25,22 @@
                             #
                         </th>
                         <th scope="col" class="px-6 py-3">
+                            Author
+                        </th>
+                        <th scope="col" class="px-6 py-3">
                             Category
                         </th>
                         <th scope="col" class="px-6 py-3">
-                            Parent
+                            Title
+                        </th>
+                        <th scope="col" class="px-6 py-3">
+                            Publish Date
                         </th>
                     </tr>
                     </thead>
                     <tbody>
                     @foreach($paginator as $item)
-                        @php /** @var \App\Models\BlogCategory $item */@endphp
+                        @php /** @var \App\Models\BlogPost $item */@endphp
                         <tr
                             class="bg-white border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600">
                             <th scope="row"
@@ -42,13 +48,19 @@
                                 {{ $item->id }}
                             </th>
                             <td class="px-6 py-4">
-                                <a href="{{ route('blog.admin.categories.edit', $item->id)  }}"
+                                {{ $item->user->name }}
+                            </td>
+                            <td class="px-6 py-4">
+                                {{ $item->category->title }}
+                            </td>
+                            <td class="px-6 py-4">
+                                <a href="{{ route('blog.admin.posts.edit', $item->id)  }}"
                                    class="font-medium text-blue-600 dark:text-blue-500 hover:underline">
                                     {{ $item->title }}
                                 </a>
                             </td>
                             <td class="px-6 py-4">
-                                {{ $item->parent_id }}
+                                {{ $item->published_at ? \Carbon\Carbon::parse($item->published_at)->format('d.M H:i') : '' }}
                             </td>
                         </tr>
                     @endforeach
@@ -67,3 +79,4 @@
         @endif
     </x-slot:slot>
 </x-app-layout>
+
