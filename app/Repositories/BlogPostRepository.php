@@ -14,6 +14,17 @@ class BlogPostRepository extends CoreRepository
     }
 
     /**
+     * Get model for edit in admin
+     *
+     * @param $id
+     * @return Model|null
+     */
+    public function getEdit($id): Model|null
+    {
+        return $this->startConditions()->find($id);
+    }
+
+    /**
      * Get all posts by paginate
      *
      * @param $perPage
