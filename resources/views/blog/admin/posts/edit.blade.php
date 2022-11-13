@@ -85,6 +85,7 @@
                     </div>
                 </div>
             </form>
+                @if($item->exists)
                     <form method="POST" action="{{ route('blog.admin.posts.destroy', $item->id) }}">
                         @method('DELETE')
                         @csrf
@@ -93,5 +94,6 @@
                             Delete Post
                         </button>
                     </form>
+              @endif
     </x-slot:slot>
 </x-app-layout>

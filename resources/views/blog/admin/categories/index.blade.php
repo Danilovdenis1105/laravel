@@ -48,7 +48,7 @@
                                 </a>
                             </td>
                             <td class="px-6 py-4">
-                                {{ $item->parent_id }}
+                                {{ $item->parentTitle }}
                             </td>
                         </tr>
                     @endforeach

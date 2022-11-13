@@ -57,9 +57,7 @@ class CategoryController extends BaseController
     public function store(BlogCategoryCreateRequest $request): RedirectResponse
     {
         $data = $request->post('category');
-        if (empty($data['slug'])) {
-            $data['slug'] = Str::slug($data['title']);
-        }
+
         $item = new BlogCategory($data);
 
         if ($item->save()) {
@@ -106,9 +104,6 @@ class CategoryController extends BaseController
                 ->withInput();
         }
         $data = $request->post('category');
-        if (empty($data['slug'])) {
-            $data['slug'] = Str::slug($data['title']);
-        }
         $result = $item->update($data);
 
         if ($result) {

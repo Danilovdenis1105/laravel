@@ -11,11 +11,12 @@ class BlogPost extends Model
 {
     use HasFactory, SoftDeletes;
 
+    public const UNKNOWN_USER = 1;
+
     protected $table = 'blog_posts';
 
     protected $fillable = [
         'category_id',
-        'user_id',
         'slug',
         'title',
         'excerpt',
