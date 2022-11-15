@@ -10,7 +10,6 @@ use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Contracts\View\Factory;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
-use Str;
 
 class CategoryController extends BaseController
 {
@@ -100,7 +99,7 @@ class CategoryController extends BaseController
         $item = $this->blogCategoryRepository->getEdit($id);
         if (is_null($item)) {
             return back()
-                ->withErrors(['msg' => 'No category with id'.$id])
+                ->withErrors(['msg' => 'No category with id' . $id])
                 ->withInput();
         }
         $data = $request->post('category');
