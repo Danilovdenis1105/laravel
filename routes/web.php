@@ -1,8 +1,8 @@
 <?php
 
 use App\Http\Controllers\Blog\Admin\CategoryController;
-use App\Http\Controllers\Blog\PostController;
 use App\Http\Controllers\Blog\Admin\PostController as AdminPostsController;
+use App\Http\Controllers\Blog\PostController;
 use App\Http\Controllers\RestTestController;
 use Illuminate\Support\Facades\Route;
 
@@ -40,4 +40,4 @@ Route::get('/admin', function () {
     return view('dashboard');
 })->middleware(['auth', 'verified'])->name('admin');
 
-require __DIR__.'/auth.php';
+require __DIR__ . '/auth.php';

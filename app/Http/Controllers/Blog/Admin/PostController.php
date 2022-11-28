@@ -12,7 +12,7 @@ use Illuminate\Contracts\View\Factory;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
 
-class  PostController extends BaseController
+class PostController extends BaseController
 {
     private BlogPostRepository $blogPostRepository;
 
@@ -25,6 +25,7 @@ class  PostController extends BaseController
         $this->blogPostRepository = app(BlogPostRepository::class);
         $this->blogCategoryRepository = app(BlogCategoryRepository::class);
     }
+
     /**
      * Display a listing of the resource.
      *
@@ -88,15 +89,17 @@ class  PostController extends BaseController
     /**
      * Update the specified resource in storage.
      *
-     * @param  int  $id
+     * @param BlogPostUpdateRequest $request
+     * @param int $id
+     * @return RedirectResponse
      */
-    public function update(BlogPostUpdateRequest $request, $id)
+    public function update(BlogPostUpdateRequest $request, int $id): RedirectResponse
     {
         $item = $this->blogPostRepository->getEdit($id);
 
         if (is_null($item)) {
             return back()
-                ->withErrors(['msg' => 'No post with id '.$id])
+                ->withErrors(['msg' => 'No post with id ' . $id])
                 ->withInput();
         }
 
@@ -118,9 +121,18 @@ class  PostController extends BaseController
     /**
      * Remove the specified resource from storage.
      *
-     * @param  int  $id
+     * @param int $id
+     * @return RedirectResponse
      */
-    public function destroy($id)
+    public function destroy(int $id): RedirectResponse
     {
+        $result = BlogPost::destroy($id);
+
+        if ($result) {
+            return redirect()->route('blog.admin.posts.index')
+                ->with(['sussess' => "Post was delete with id: { $id }"]);
+        }
+
+        return back()->withErrors(['msg' => 'Error while deleting']);
     }
 }
